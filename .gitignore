@@ -1,0 +1,7 @@
+*.pyc
+*.tar.gz
+privoxy/
+tor/
+build/
+dist/
+*.egg-info
