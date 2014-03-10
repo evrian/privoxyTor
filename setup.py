@@ -7,5 +7,6 @@ setup(name='privoxyTor',
     author='gaysoda',
     author_email='gaysoda@givedaps.com',
     license='MIT',
-    pacakges=['privoxytor'],
+    packages=['privoxytor'],
+    package_data={'privoxytor': ['bin/torrc', 'bin/config_multi']},
     zip_safe=False)

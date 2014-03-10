@@ -65,7 +65,7 @@ class PrivoxyTorManager:
         self.controlPort = controlPort
         self.socksPort = socksPort
         self.privoxyPort = privoxyPort
-        self.rootDir = '/'.join(self.__getWorkingDir().split('/')[:-1])
+        self.rootDir = self.__getWorkingDir()
 
     def __copyDir(self, src, dst):
         # Copies a directory to another one
@@ -84,7 +84,7 @@ class PrivoxyTorManager:
         # Creates several instances of Tor-Privoxy connections
         # instanceNum: number of instances to create
         # return: a list of PrivoxyTor instances
-        print self.rootDir
+        # print self.rootDir
         directory = self.rootDir + '/instances'
         controlPort = self.controlPort
         privoxyPort = self.privoxyPort
@@ -140,27 +140,28 @@ class PrivoxyTorManager:
             % (self.controlPort, self.socksPort, self.privoxyPort)
         directory = '%s/instances/%s' % (self.rootDir, index)
 
-        # Copy the whole directory ./abstract to directory ./instances/<index>
-        self.__copyDir(self.rootDir + '/abstract', directory)
+        # Copy the whole directory ./bin to directory ./instances/<index>
+        self.__copyDir(self.rootDir + '/bin', directory)
 
         # open tor config file then start it
-        with open(directory + '/tor/torrc', 'r') as content_file:
+        with open(directory + '/torrc', 'r') as content_file:
             content = content_file.read()
             content = content % (self.controlPort, self.socksPort)
             self.__alterFileContent(directory + '/tor/torrc', content)
-            os.chdir(directory + '/tor/tor')
-            cmd = 'src/or/tor -DataDirectory %s -PidFile % s -f ../torrc' % \
+            os.chdir(directory + '/tor')
+            print '\n' + os.getcwd() + ' tor \n'
+            cmd = 'src/or/tor -DataDirectory %s -PidFile % s -f torrc' % \
                 (os.getcwd() + '/', 'tor.pid')
             Popen(cmd, shell=True)
 
         # do the same thing with privoxy
-        with open(directory + '/privoxy/config_multi', 'r') as content_file:
-            print directory + '/privoxy/config_multi\n'
+        with open(directory + '/config_multi', 'r') as content_file:
+            # print directory + 'config_multi\n'
             content = content_file.read()
             content = content % (self.privoxyPort, self.socksPort)
             self.__alterFileContent(directory +
-                                    '/privoxy/privoxy/config_multi', content)
-            os.chdir(directory + '/privoxy/privoxy/')
+                                    '/privoxy/config_multi', content)
+            os.chdir(directory + '/privoxy/')
             print os.getcwd() + ' me\n'
             cmd = './privoxy --no-daemon --pidfile %s config_multi' % \
                 (directory + '/privoxy/privoxy.pid')
